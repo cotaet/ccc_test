@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat-GPT プロンプト生成</title>
+    <style>
+        body {
+            text-align: center;
+        }
+        textarea {
+            width: 80vw;
+            height: 20vh;
+            padding: 5px;
+        }
+        input {
+            border-radius: 20px;
+            padding: 20px;
+            display: block;
+            margin: 20px auto;
+            cursor: pointer;
+        }
+        input:hover {
+            background: #4df;
+        }
+        .result {
+            width: 80vw;
+            background: #ddd;
+            border-radius: 20px;
+            margin: 20px auto;
+            text-align: start;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="promptArea">
+        <h1>プロンプト上部</h1>
+        <textarea name="promptTop" id="" cols="30" rows="10" placeholder="LPのHTMLから抜き出した以下の情報を元に、以下の問いに答えてください。
+
+1. 要約するとどうなりますか？
+2. このサイトの扱う業種は？
+3. このサイトのキャッチコピーはなんですか？
+4. このサイトのアピールポイントはなんですか？
+5. このサイトに最適なキャッチコピーはなんですか？"></textarea>
+    </div>
+
+    <div class="urlArea">
+        <h1>URL</h1>
+        <p>改行区切りで複数記入可能</p>
+        <textarea name="urls" id="" cols="30" rows="10" placeholder="https://example1.com
+https://example2.com"></textarea>
+    </div>
+
+    <input type="button" value="プロンプト生成">
+
+    <div class="resultArea">
+        <h1>結果（プロンプト）</h1>
+        <p id='status'>プロンプト生成前</p>
+    </div>
+
+    <script>
+        const button = document.querySelector("input");
+        const resultArea = document.querySelector(".resultArea");
+
+        button.addEventListener("click", async (e)  => {
+
+            const statusElem = document.getElementById("status");
+            statusElem.textContent = "プロンプト生成中！";
+            statusElem.style.color = "red";
+
+            const promptTop = document.getElementsByName("promptTop")[0].value;
+            const urls = document.getElementsByName("urls")[0].value.split("\n");
+
+            console.log(promptTop);
+            console.log(urls);
+
+            urls.forEach( async (url) => {
+                const scrapeResults = await (await fetch(`/scrape?url=${url}`)).text();
+                console.log(scrapeResults);
+
+                const result = `${promptTop}\n\n${scrapeResults}`;
+                const length = result.length;
+
+                resultArea.insertAdjacentHTML("beforeend", `<a href="${url}" class="url">${url}</a>`);
+                resultArea.insertAdjacentHTML("beforeend", `<p class="length">${length} 文字</p>`);
+                resultArea.insertAdjacentHTML("beforeend", `<div class="result">${result}</div>`.replace(/\n/g, "<br>"));
+            });
+
+            statusElem.textContent = "プロンプト生成完了！";
+            statusElem.style.color = "blue";
+
+        })
+    </script>
+
+</body>
+</html>
