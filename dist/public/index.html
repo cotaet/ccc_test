@@ -71,21 +71,34 @@ https://example2.com"></textarea>
             statusElem.style.color = "red";
 
             const promptTop = document.getElementsByName("promptTop")[0].value;
-            const urls = document.getElementsByName("urls")[0].value.split("\n");
+            const urls = document.getElementsByName("urls")[0].value.split("\n").slice(0, 10);
 
             console.log(promptTop);
             console.log(urls);
 
             urls.forEach( async (url) => {
-                const scrapeResults = await (await fetch(`/scrape?url=${url}`)).text();
-                console.log(scrapeResults);
+                const fetchResult = await (await fetch(`/gpt`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        promptFirst: promptTop,
+                        url
+                    })
+                })).json();
+                console.log(fetchResult);
 
-                const result = `${promptTop}\n\n${scrapeResults}`;
-                const length = result.length;
+                const {prompt, GPTResult, copyResult} = fetchResult;
+
 
                 resultArea.insertAdjacentHTML("beforeend", `<a href="${url}" class="url">${url}</a>`);
-                resultArea.insertAdjacentHTML("beforeend", `<p class="length">${length} 文字</p>`);
-                resultArea.insertAdjacentHTML("beforeend", `<div class="result">${result}</div>`.replace(/\n/g, "<br>"));
+                resultArea.insertAdjacentHTML("beforeend", `<h2>prompt結果</h2>`);
+                resultArea.insertAdjacentHTML("beforeend", `<div class="result">${prompt}</div>`.replace(/\n/g, "<br>"));
+                resultArea.insertAdjacentHTML("beforeend", `<h2>chatGPT結果</h2>`);
+                resultArea.insertAdjacentHTML("beforeend", `<div class="result">${GPTResult}</div>`.replace(/\n/g, "<br>"));
+                resultArea.insertAdjacentHTML("beforeend", `<h2>完成コピー</h2>`);
+                resultArea.insertAdjacentHTML("beforeend", `<div class="result">${copyResult}</div>`.replace(/\n/g, "<br>"));
             });
 
             statusElem.textContent = "プロンプト生成完了！";
