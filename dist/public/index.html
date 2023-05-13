@@ -11,7 +11,7 @@
         }
         textarea {
             width: 80vw;
-            height: 20vh;
+            height: 40vh;
             padding: 5px;
         }
         input {
@@ -37,13 +37,33 @@
 <body>
     <div class="promptArea">
         <h1>プロンプト上部</h1>
-        <textarea name="promptTop" id="" cols="30" rows="10" placeholder="LPのHTMLから抜き出した以下の情報を元に、以下の問いに答えてください。
+        <p>（例が入っています）</p>
+        <textarea name="promptTop" id="" cols="30" rows="10"
+        placeholder="下記のWebサイトから抜き出したHTMLの情報を元に、一歩一歩考え、以下の問に番号付きリストの箇条書きで答えてください。
 
-1. 要約するとどうなりますか？
-2. このサイトの扱う業種は？
-3. このサイトのキャッチコピーはなんですか？
-4. このサイトのアピールポイントはなんですか？
-5. このサイトに最適なキャッチコピーはなんですか？"></textarea>
+        ＃制約条件
+        -上記サイトの広告動画に使用して下さい、
+        -読んだら思わずクリックしてしまいそうな魅力的なコピーにして下さい。
+        -絵文字は使わないで下さい。
+        -質問文は記載せず番号のみ記載して回答してください。
+        -回答には「」をつけて回答して下さい。
+        -改行は/で示してください。
+
+        1. このサイトのキャッチコピーを、このサイトにあるものを活用しながら5個作りなさい。それらはそれぞれ「」でくくり、全て改行して5行で答えなさい。また、それぞれ日本語で15文字以内にしなさい。
+
+        ">下記のWebサイトから抜き出したHTMLの情報を元に、一歩一歩考え、以下の問に番号付きリストの箇条書きで答えてください。
+
+＃制約条件
+-上記サイトの広告動画に使用して下さい、
+-読んだら思わずクリックしてしまいそうな魅力的なコピーにして下さい。
+-絵文字は使わないで下さい。
+-質問文は記載せず番号のみ記載して回答してください。
+-回答には「」をつけて回答して下さい。
+-改行は/で示してください。
+
+1. このサイトのキャッチコピーを、このサイトにあるものを活用しながら5個作りなさい。それらはそれぞれ「」でくくり、全て改行して5行で答えなさい。また、それぞれ日本語で15文字以内にしなさい。
+
+        </textarea>
     </div>
 
     <div class="urlArea">
@@ -76,7 +96,7 @@ https://example2.com"></textarea>
             console.log(promptTop);
             console.log(urls);
 
-            urls.forEach( async (url) => {
+            await urls.forEach( async (url) => {
                 const fetchResult = await (await fetch(`/gpt`, {
                     method: "POST",
                     headers: {
@@ -98,7 +118,7 @@ https://example2.com"></textarea>
                 resultArea.insertAdjacentHTML("beforeend", `<h2>chatGPT結果</h2>`);
                 resultArea.insertAdjacentHTML("beforeend", `<div class="result">${GPTResult}</div>`.replace(/\n/g, "<br>"));
                 resultArea.insertAdjacentHTML("beforeend", `<h2>完成コピー</h2>`);
-                resultArea.insertAdjacentHTML("beforeend", `<div class="result">${copyResult}</div>`.replace(/\n/g, "<br>"));
+                resultArea.insertAdjacentHTML("beforeend", `<div class="result">${copyResult.join("<br>")}</div>`.replace(/\n/g, "<br>"));
             });
 
             statusElem.textContent = "プロンプト生成完了！";

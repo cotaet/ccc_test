@@ -1,6 +1,8 @@
 import request from "request";
 import cheerio from "cheerio";
 import { Configuration, OpenAIApi } from "openai";
+import { config } from "dotenv";
+config();
 
 interface TextData {
     title: string,
@@ -38,7 +40,7 @@ export const createPromptAfterWithURL = async (url: string) => {
 
 
 export const accessToChatGPT = async (prompt: string) => {
-    return "ここに結果"
+    // return "ここに結果";
     const configuration = new Configuration({
         apiKey: process.env.OPENAI_API_KEY,
     });

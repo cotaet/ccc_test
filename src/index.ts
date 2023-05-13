@@ -1,3 +1,5 @@
+import fs from "fs";
+
 import path from "path";
 import express from "express";
 import { accessToChatGPT, createPromptAfterWithURL, getBetweenJPBrackets } from "./gpt";
@@ -18,8 +20,10 @@ app.post("/gpt", async (req, res) => {
 
     const prompt = promptFirst + `\n\n\n` + await createPromptAfterWithURL(url);
     const GPTResult = (await accessToChatGPT(prompt)) || "";
-    const copyResult = GPTResult.split("\n").map(text => JSON.stringify([getBetweenJPBrackets(text) || "コピー取得失敗"]));
+    const copyResult = GPTResult.split("\n").map(text => getBetweenJPBrackets(text) || "コピー取得失敗");
 
+    
+    fs.writeFileSync(path.join(__dirname, "results.txt"), JSON.stringify({prompt, GPTResult, copyResult}));
     res.json({prompt, GPTResult, copyResult});
 })
 
